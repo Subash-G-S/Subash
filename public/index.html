@@ -48,5 +48,50 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <script>
+  // Register service worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+      .register('/service-worker.js')
+      .then(() => console.log('✅ Service Worker registered'))
+      .catch((err) => console.log('❌ SW registration failed:', err));
+  }
+
+  // Mobile-only install prompt
+  let deferredPrompt;
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    if (isMobile) {
+      const installBtn = document.createElement('button');
+      installBtn.textContent = '📱 Install Ahaar App';
+      installBtn.style.position = 'fixed';
+      installBtn.style.bottom = '20px';
+      installBtn.style.left = '50%';
+      installBtn.style.transform = 'translateX(-50%)';
+      installBtn.style.background = '#4CAF50';
+      installBtn.style.color = '#fff';
+      installBtn.style.border = 'none';
+      installBtn.style.borderRadius = '10px';
+      installBtn.style.padding = '12px 20px';
+      installBtn.style.fontSize = '16px';
+      installBtn.style.cursor = 'pointer';
+      installBtn.style.zIndex = '1000';
+      document.body.appendChild(installBtn);
+
+      installBtn.addEventListener('click', async () => {
+        installBtn.style.display = 'none';
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to install prompt: ${outcome}`);
+        deferredPrompt = null;
+      });
+    }
+  });
+</script>
+
   </body>
 </html>
