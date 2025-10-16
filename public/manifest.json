@@ -56,7 +56,13 @@
   "start_url": "/",
   "scope" : "/",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui", "fullscreen"],
+  "display_override": [
+    "browser",
+    "fullscreen",
+    "minimal-ui",
+    "window-controls-overlay",
+    "standalone"
+  ],
   "theme_color": "#000000",
   "background_color": "#ffffff",
   "prefer_related_applications": false,
