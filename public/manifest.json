@@ -1,4 +1,5 @@
 {
+  "id": "app.ahaar.amrita",
   "short_name": "Ahaar",
   "name": "Ahaar Amrita",
   "description": "In-campus food delivery app built for Amrita University students.",
@@ -20,6 +21,19 @@
       "sizes": "512x512"
     }
   ],
+  "screenshots": [
+  {
+    "src": "screenshot1.png",
+    "sizes": "540x960",
+    "type": "image/png"
+  },
+  {
+    "src": "screenshot2.png",
+    "sizes": "540x960",
+    "type": "image/png"
+  }
+],
+
   "start_url": "/",
   "scope" : "/",
   "display": "standalone",
