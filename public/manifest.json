@@ -69,8 +69,5 @@
   "categories": ["food", "delivery", "campus", "university"],
   "lang": "en",
   "dir": "ltr",
-  "scope_extensions": [
-    { "origin": "https://ahaaramrita.vercel.app" }
-  ],
   "iarc_rating_id": "pending"
 }
