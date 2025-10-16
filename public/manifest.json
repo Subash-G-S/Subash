@@ -56,9 +56,14 @@
   "start_url": "/",
   "scope" : "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "fullscreen"],
   "theme_color": "#000000",
   "background_color": "#ffffff",
   "prefer_related_applications": false,
   "categories": ["food", "delivery", "campus", "university"],
-  "lang": "en"
+  "lang": "en",
+  "dir": "ltr",
+  "scope_extensions": [
+    { "origin": "https://ahaaramrita.vercel.app" }
+  ]
 }
