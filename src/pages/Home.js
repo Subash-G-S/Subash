@@ -82,7 +82,7 @@ function Home() {
           🍱 Ahaar
         </h1>
         <p className="fs-5 mb-4" style={{ color: "#5d4037" }}>
-          Your college canteen app — fast ordering, smooth delivery, and happy eating!
+          Amrita canteen app — fast ordering, smooth delivery, and happy eating!
         </p>
 
         <div className="d-flex flex-column flex-sm-row gap-3 justify-content-center">
