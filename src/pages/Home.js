@@ -27,6 +27,7 @@ function Home() {
             </div>
           </div>
         </div>
+        {/*
         <div className="col-md-4 mt-4 mt-md-0">
           <div className="card h-100 shadow-sm border-0">
             <div className="card-body">
@@ -35,6 +36,7 @@ function Home() {
             </div>
           </div>
         </div>
+        */}
         <div className="col-md-4 mt-4 mt-md-0">
           <div className="card h-100 shadow-sm border-0">
             <div className="card-body">
