@@ -41,6 +41,7 @@ const Profile = () => {
       if (unsubscribeAuth) unsubscribeAuth();
     };
   }, []);
+
   const fetchUserDetails = async (uid) => {
     const userDoc = await getDoc(doc(db, "users", uid));
     if (userDoc.exists()) {
@@ -60,20 +61,17 @@ const Profile = () => {
       );
 
       const unsubscribe = onSnapshot(q, (snapshot) => {
-        console.log("📦 Snapshot updated in Profile.js:", snapshot.size);
-
         const allOrders = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-
         setOrders(allOrders);
       });
 
       return unsubscribe;
     } catch (err) {
       console.error("❌ Error setting up snapshot listener:", err.message);
-      return () => {}; // Return a no-op function to safely unsubscribe
+      return () => {};
     }
   };
 
@@ -97,6 +95,21 @@ const Profile = () => {
       } catch (error) {
         console.error("Logout error:", error);
       }
+    }
+  };
+
+  // ✅ Cancel order
+  const handleCancelOrder = async (orderId) => {
+    const confirmCancel = window.confirm("Are you sure you want to cancel this order?");
+    if (!confirmCancel) return;
+    try {
+      await updateDoc(doc(db, "orders", orderId), {
+        status: "cancelled",
+      });
+      alert("Order cancelled successfully.");
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+      alert("Failed to cancel order. Try again.");
     }
   };
 
@@ -173,15 +186,37 @@ const Profile = () => {
               <p><strong>Delivery Location:</strong> {order.deliveryLocation || "Not specified"}</p>
               <p>
                 <strong>Status:</strong>{" "}
-                <span className={`badge bg-${order.status === "delivered" ? "success" : order.status === "picked" ? "warning text-dark" : "secondary"}`}>
+                <span
+                  className={`badge bg-${
+                    order.status === "delivered"
+                      ? "success"
+                      : order.status === "picked"
+                      ? "warning text-dark"
+                      : order.status === "cancelled"
+                      ? "danger"
+                      : "secondary"
+                  }`}
+                >
                   {order.status}
                 </span>
               </p>
+
               {(order.status === "picked" || order.status === "delivered") && (
                 <>
                   <p><strong>Runner Name:</strong> {order.runnerName || "N/A"}</p>
                   <p><strong>Runner Phone:</strong> {order.runnerPhone || "N/A"}</p>
                 </>
+              )}
+
+              {/* ✅ Cancel Button */}
+              {order.status === "pending" && (
+                <Button
+                  variant="outline-danger"
+                  size="sm"
+                  onClick={() => handleCancelOrder(order.id)}
+                >
+                  Cancel Order
+                </Button>
               )}
             </Card.Body>
           </Card>
