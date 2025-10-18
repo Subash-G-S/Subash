@@ -11,7 +11,7 @@ import {
 } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Accordion, Modal, Button, Form, InputGroup } from "react-bootstrap";
 
 const RunnerDashboard = () => {
   const [pendingOrders, setPendingOrders] = useState([]);
@@ -23,6 +23,7 @@ const RunnerDashboard = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [codeInput, setCodeInput] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     let unsubscribeAuth;
@@ -45,7 +46,7 @@ const RunnerDashboard = () => {
           }
         });
 
-        // 🔹 Pending orders (available to pick)
+        // 🔹 Available orders
         const pendingQuery = query(
           collection(db, "orders"),
           where("status", "==", "pending")
@@ -54,7 +55,7 @@ const RunnerDashboard = () => {
           const pending = await Promise.all(
             snapshot.docs.map(async (docSnap) => {
               const data = docSnap.data();
-              if (data.status === "cancelled") return null; // ✅ ignore cancelled
+              if (data.status === "cancelled") return null;
               const buyerDoc = await getDoc(doc(db, "users", data.userId));
               const buyerData = buyerDoc.exists() ? buyerDoc.data() : {};
               return {
@@ -69,7 +70,7 @@ const RunnerDashboard = () => {
           setPendingOrders(pending.filter(o => o && o.userId !== user.uid));
         });
 
-        // 🔹 Accepted orders (picked by this runner)
+        // 🔹 Accepted orders
         const pickedQuery = query(
           collection(db, "orders"),
           where("status", "==", "picked"),
@@ -93,7 +94,7 @@ const RunnerDashboard = () => {
           setAcceptedOrders(accepted);
         });
 
-        // 🔹 Completed orders (delivered by this runner)
+        // 🔹 Completed orders
         const completedQuery = query(
           collection(db, "orders"),
           where("status", "==", "delivered"),
@@ -175,85 +176,127 @@ const RunnerDashboard = () => {
     }
   };
 
+  // 🔍 Filter orders by delivery location
+  const filterBySearch = (orders) => {
+    if (!searchTerm.trim()) return orders;
+    return orders.filter(order =>
+      order.deliveryLocation?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  };
+
+  const renderOrders = (orders, type) => {
+    const filtered = filterBySearch(orders);
+
+    if (filtered.length === 0)
+      return <p className="text-muted text-center my-2">No {type} orders found</p>;
+
+    return (
+      <div className="list-group">
+        {filtered.map((order) => (
+          <div key={order.id} className="list-group-item">
+            <div className="row">
+              {/* 🔹 3-column layout: Canteen | Items | Delivery */}
+              <div className="col-4">
+                <strong>Canteen:</strong>
+                <br />
+                {order.canteen}
+              </div>
+              <div className="col-4">
+                <strong>Items:</strong>
+                <br />
+                {order.items?.join(", ") || "N/A"}
+              </div>
+              <div className="col-4">
+                <strong>Delivery:</strong>
+                <br />
+                {order.deliveryLocation || "Not specified"}
+              </div>
+            </div>
+
+            {/* ✅ Show Buyer & Phone ONLY in Accepted Orders */}
+            {type === "accepted" && (
+              <div className="mt-2">
+                <p className="mb-1">
+                  <strong>Buyer:</strong> {order.userName}
+                </p>
+                <p className="mb-1">
+                  <strong>Phone:</strong> {order.buyerPhone}
+                </p>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            {type === "available" && (
+              <Button
+                variant="outline-primary"
+                size="sm"
+                className="mt-2"
+                onClick={() => handleAccept(order.id)}
+              >
+                Accept Order
+              </Button>
+            )}
+            {type === "accepted" && (
+              <Button
+                variant="outline-success"
+                size="sm"
+                className="mt-2"
+                onClick={() => handleDeliver(order)}
+              >
+                Mark as Delivered
+              </Button>
+            )}
+            {type === "completed" && (
+              <span className="badge bg-success mt-2">Delivered</span>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="container py-4">
       <h2 className="text-center text-primary mb-4">Runner Dashboard</h2>
-      <div className="row">
-        {/* Available Orders */}
-        <div className="col-md-4 mb-4">
-          <div className="p-4 bg-light border rounded shadow-sm">
-            <h4 className="mb-3">Available Orders</h4>
-            {pendingOrders.length === 0 ? (
-              <p className="text-muted">No pending orders</p>
-            ) : (
-              pendingOrders.map((order) => (
-                <div key={order.id} className="card mb-3">
-                  <div className="card-body">
-                    <p><strong>Buyer:</strong> {order.userName}</p>
-                    <p><strong>Phone:</strong> {order.buyerPhone}</p>
-                    <p><strong>Canteen:</strong> {order.canteen}</p>
-                    <p><strong>Items:</strong> {order.items?.join(", ")}</p>
-                    <p><strong>Delivery Location:</strong> {order.deliveryLocation || "Not specified"}</p>
-                    <button className="btn btn-outline-primary btn-sm" onClick={() => handleAccept(order.id)}>
-                      Accept Order
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
 
-        {/* Accepted Orders */}
-        <div className="col-md-4 mb-4">
-          <div className="p-4 bg-light border rounded shadow-sm">
-            <h4 className="mb-3">Your Accepted Orders</h4>
-            {acceptedOrders.length === 0 ? (
-              <p className="text-muted">No accepted orders</p>
-            ) : (
-              acceptedOrders.map((order) => (
-                <div key={order.id} className="card mb-3">
-                  <div className="card-body">
-                    <p><strong>Buyer:</strong> {order.userName}</p>
-                    <p><strong>Phone:</strong> {order.buyerPhone}</p>
-                    <p><strong>Canteen:</strong> {order.canteen}</p>
-                    <p><strong>Items:</strong> {order.items?.join(", ")}</p>
-                    <p><strong>Delivery Location:</strong> {order.deliveryLocation || "Not specified"}</p>
-                    <button className="btn btn-outline-success btn-sm" onClick={() => handleDeliver(order)}>
-                      Mark as Delivered
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
+      {/* 🔍 Search Bar */}
+      <InputGroup className="mb-4">
+        <Form.Control
+          type="text"
+          placeholder="Search by delivery location..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <Button variant="outline-secondary" onClick={() => setSearchTerm("")}>
+          Clear
+        </Button>
+      </InputGroup>
 
-        {/* Completed Orders */}
-        <div className="col-md-4 mb-4">
-          <div className="p-4 bg-light border rounded shadow-sm">
-            <h4 className="mb-3">Completed Orders</h4>
-            {completedOrders.length === 0 ? (
-              <p className="text-muted">No completed orders</p>
-            ) : (
-              completedOrders.map((order) => (
-                <div key={order.id} className="card mb-3 bg-success-subtle">
-                  <div className="card-body">
-                    <p><strong>Buyer:</strong> {order.userName}</p>
-                    <p><strong>Phone:</strong> {order.buyerPhone}</p>
-                    <p><strong>Canteen:</strong> {order.canteen}</p>
-                    <p><strong>Items:</strong> {order.items?.join(", ")}</p>
-                    <p><strong>Delivery Location:</strong> {order.deliveryLocation || "Not specified"}</p>
-                    <span className="badge bg-success">Delivered</span>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </div>
+      {/* 🔽 Accordion Dropdown (auto-collapse) */}
+      <Accordion>
+        <Accordion.Item eventKey="0">
+          <Accordion.Header>
+            Available Orders ({pendingOrders.length})
+          </Accordion.Header>
+          <Accordion.Body>{renderOrders(pendingOrders, "available")}</Accordion.Body>
+        </Accordion.Item>
 
-      {/* Modal for delivery code */}
+        <Accordion.Item eventKey="1">
+          <Accordion.Header>
+            Your Accepted Orders ({acceptedOrders.length})
+          </Accordion.Header>
+          <Accordion.Body>{renderOrders(acceptedOrders, "accepted")}</Accordion.Body>
+        </Accordion.Item>
+
+        <Accordion.Item eventKey="2">
+          <Accordion.Header>
+            Completed Orders ({completedOrders.length})
+          </Accordion.Header>
+          <Accordion.Body>{renderOrders(completedOrders, "completed")}</Accordion.Body>
+        </Accordion.Item>
+      </Accordion>
+
+      {/* Modal for Delivery Code */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Enter Buyer's 6-Digit Code</Modal.Title>
