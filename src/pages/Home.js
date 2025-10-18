@@ -14,9 +14,6 @@ function Home() {
             <Link to="/order" className="btn btn-primary btn-lg">
               Place an Order
             </Link>
-            <Link to="/login" className="btn btn-outline-secondary btn-lg">
-              Login
-            </Link>
           </div>
         </div>
       </div>
