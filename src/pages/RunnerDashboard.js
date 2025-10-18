@@ -26,6 +26,74 @@ const RunnerDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
+    // 🌈 Inject warm theme styles
+    const style = document.createElement("style");
+    style.innerHTML = `
+      @keyframes warmGradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      .warm-bg {
+        background: linear-gradient(270deg, #f8e1b7, #f0d7a7, #e8be91, #f2d6a2);
+        background-size: 800% 800%;
+        animation: warmGradientShift 10s ease infinite;
+      }
+      .card-warm {
+        background: #fffaf3;
+        border-radius: 14px;
+        border: none;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        padding: 15px;
+      }
+      .btn-warm-primary {
+        background-color: #fff8e1 !important;
+        color: #5d4037 !important;
+        border: 2px solid #ffe0b2 !important;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      .btn-warm-primary:hover {
+        background-color: #f7d49b !important;
+        color: #3e2723 !important;
+        border-color: #d7b97a !important;
+        transform: scale(1.03);
+      }
+      .btn-warm-success {
+        background-color: #d7b97a !important;
+        color: #3e2723 !important;
+        border: none !important;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      .btn-warm-success:hover {
+        background-color: #bfa05e !important;
+        color: white !important;
+        transform: scale(1.03);
+      }
+      .accordion-button {
+        background-color: #fff8e1 !important;
+        color: #5d4037 !important;
+        font-weight: 600;
+      }
+      .accordion-button:not(.collapsed) {
+        background-color: #f7d49b !important;
+        color: #3e2723 !important;
+      }
+      .form-control {
+        border-radius: 10px;
+        border: 1.5px solid #ffe0b2;
+      }
+      .form-control:focus {
+        border-color: #d7b97a;
+        box-shadow: 0 0 0 0.2rem rgba(215, 185, 122, 0.25);
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
+
+  useEffect(() => {
     let unsubscribeAuth;
     let unsubscribePending;
     let unsubscribePicked;
@@ -34,7 +102,6 @@ const RunnerDashboard = () => {
     unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setRunnerId(user.uid);
-
         const runnerRef = doc(db, "users", user.uid);
         onSnapshot(runnerRef, (docSnap) => {
           if (docSnap.exists()) {
@@ -46,7 +113,7 @@ const RunnerDashboard = () => {
           }
         });
 
-        // 🔹 Available orders
+        // 🧾 Pending Orders
         const pendingQuery = query(
           collection(db, "orders"),
           where("status", "==", "pending")
@@ -63,14 +130,13 @@ const RunnerDashboard = () => {
                 ...data,
                 userName: buyerData.name || "Unknown",
                 buyerPhone: buyerData.phone || "N/A",
-                userCode: buyerData.code || "",
               };
             })
           );
           setPendingOrders(pending.filter(o => o && o.userId !== user.uid));
         });
 
-        // 🔹 Accepted orders
+        // 🚚 Accepted Orders
         const pickedQuery = query(
           collection(db, "orders"),
           where("status", "==", "picked"),
@@ -87,14 +153,13 @@ const RunnerDashboard = () => {
                 ...data,
                 userName: buyerData.name || "Unknown",
                 buyerPhone: buyerData.phone || "N/A",
-                userCode: buyerData.code || "",
               };
             })
           );
           setAcceptedOrders(accepted);
         });
 
-        // 🔹 Completed orders
+        // ✅ Completed Orders
         const completedQuery = query(
           collection(db, "orders"),
           where("status", "==", "delivered"),
@@ -111,7 +176,6 @@ const RunnerDashboard = () => {
                 ...data,
                 userName: buyerData.name || "Unknown",
                 buyerPhone: buyerData.phone || "N/A",
-                userCode: buyerData.code || "",
               };
             })
           );
@@ -176,7 +240,7 @@ const RunnerDashboard = () => {
     }
   };
 
-  // 🔍 Filter orders by delivery location
+  // 🔍 Filter by delivery location
   const filterBySearch = (orders) => {
     if (!searchTerm.trim()) return orders;
     return orders.filter(order =>
@@ -186,57 +250,43 @@ const RunnerDashboard = () => {
 
   const renderOrders = (orders, type) => {
     const filtered = filterBySearch(orders);
-
     if (filtered.length === 0)
       return <p className="text-muted text-center my-2">No {type} orders found</p>;
 
     return (
       <div className="list-group">
         {filtered.map((order) => (
-          <div key={order.id} className="list-group-item">
+          <div key={order.id} className="card-warm mb-3">
             <div className="row">
-              {/* 🔹 3-column layout: Canteen | Items | Delivery */}
               <div className="col-4">
-                <strong>Canteen:</strong>
-                <br />
-                {order.canteen}
+                <strong>Canteen:</strong> <br /> {order.canteen}
               </div>
               <div className="col-4">
-                <strong>Items:</strong>
-                <br />
-                {order.items?.join(", ") || "N/A"}
+                <strong>Items:</strong> <br /> {order.items?.join(", ") || "N/A"}
               </div>
               <div className="col-4">
-                <strong>Delivery:</strong>
-                <br />
-                {order.deliveryLocation || "Not specified"}
+                <strong>Delivery:</strong> <br /> {order.deliveryLocation || "N/A"}
               </div>
             </div>
 
-            {/* ✅ Show Buyer & Clickable Phone ONLY in Accepted Orders */}
             {type === "accepted" && (
-              <div className="mt-2">
+              <div className="mt-3">
                 <p className="mb-1">
                   <strong>Buyer:</strong> {order.userName}
                 </p>
                 <p className="mb-1">
                   <strong>Phone:</strong>{" "}
-                  <a
-                    href={`tel:${order.buyerPhone}`}
-                    style={{ textDecoration: "none" }}
-                  >
+                  <a href={`tel:${order.buyerPhone}`} style={{ textDecoration: "none" }}>
                     {order.buyerPhone}
                   </a>
                 </p>
               </div>
             )}
 
-            {/* Action Buttons */}
             {type === "available" && (
               <Button
-                variant="outline-primary"
+                className="btn-warm-primary mt-3"
                 size="sm"
-                className="mt-2"
                 onClick={() => handleAccept(order.id)}
               >
                 Accept Order
@@ -244,16 +294,15 @@ const RunnerDashboard = () => {
             )}
             {type === "accepted" && (
               <Button
-                variant="outline-success"
+                className="btn-warm-success mt-3"
                 size="sm"
-                className="mt-2"
                 onClick={() => handleDeliver(order)}
               >
                 Mark as Delivered
               </Button>
             )}
             {type === "completed" && (
-              <span className="badge bg-success mt-2">Delivered</span>
+              <span className="badge bg-success mt-3">Delivered</span>
             )}
           </div>
         ))}
@@ -262,47 +311,46 @@ const RunnerDashboard = () => {
   };
 
   return (
-    <div className="container py-4">
-      <h2 className="text-center text-primary mb-4">Runner Dashboard</h2>
+    <div className="warm-bg min-vh-100 py-4">
+      <div className="container">
+        <h2 className="text-center fw-bold mb-4" style={{ color: "#4e342e" }}>
+          🛵 Runner Dashboard
+        </h2>
 
-      {/* 🔍 Search Bar */}
-      <InputGroup className="mb-4">
-        <Form.Control
-          type="text"
-          placeholder="Search by delivery location..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <Button variant="outline-secondary" onClick={() => setSearchTerm("")}>
-          Clear
-        </Button>
-      </InputGroup>
+        <InputGroup className="mb-4">
+          <Form.Control
+            type="text"
+            placeholder="Search by delivery location..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <Button
+            className="btn-warm-primary"
+            onClick={() => setSearchTerm("")}
+          >
+            Clear
+          </Button>
+        </InputGroup>
 
-      {/* 🔽 Accordion Dropdown (auto-collapse) */}
-      <Accordion>
-        <Accordion.Item eventKey="0">
-          <Accordion.Header>
-            Available Orders ({pendingOrders.length})
-          </Accordion.Header>
-          <Accordion.Body>{renderOrders(pendingOrders, "available")}</Accordion.Body>
-        </Accordion.Item>
+        <Accordion>
+          <Accordion.Item eventKey="0">
+            <Accordion.Header>Available Orders ({pendingOrders.length})</Accordion.Header>
+            <Accordion.Body>{renderOrders(pendingOrders, "available")}</Accordion.Body>
+          </Accordion.Item>
 
-        <Accordion.Item eventKey="1">
-          <Accordion.Header>
-            Your Accepted Orders ({acceptedOrders.length})
-          </Accordion.Header>
-          <Accordion.Body>{renderOrders(acceptedOrders, "accepted")}</Accordion.Body>
-        </Accordion.Item>
+          <Accordion.Item eventKey="1">
+            <Accordion.Header>Your Accepted Orders ({acceptedOrders.length})</Accordion.Header>
+            <Accordion.Body>{renderOrders(acceptedOrders, "accepted")}</Accordion.Body>
+          </Accordion.Item>
 
-        <Accordion.Item eventKey="2">
-          <Accordion.Header>
-            Completed Orders ({completedOrders.length})
-          </Accordion.Header>
-          <Accordion.Body>{renderOrders(completedOrders, "completed")}</Accordion.Body>
-        </Accordion.Item>
-      </Accordion>
+          <Accordion.Item eventKey="2">
+            <Accordion.Header>Completed Orders ({completedOrders.length})</Accordion.Header>
+            <Accordion.Body>{renderOrders(completedOrders, "completed")}</Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+      </div>
 
-      {/* Modal for Delivery Code */}
+      {/* Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Enter Buyer's 6-Digit Code</Modal.Title>
@@ -324,7 +372,7 @@ const RunnerDashboard = () => {
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             Cancel
           </Button>
-          <Button variant="success" onClick={confirmDelivery}>
+          <Button className="btn-warm-success" onClick={confirmDelivery}>
             Confirm Delivery
           </Button>
         </Modal.Footer>
