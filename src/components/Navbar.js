@@ -20,6 +20,7 @@ function Navbar() {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
       <div className="container">
+        <img src="/ahaarlogopng-32x32.png" alt="ahaarlogo" className="me-2" style={{height:"28px",width:"28px"}}></img>
         <Link className="navbar-brand fw-bold" to="/">
           Ahaar
         </Link>
