@@ -213,14 +213,20 @@ const RunnerDashboard = () => {
               </div>
             </div>
 
-            {/* ✅ Show Buyer & Phone ONLY in Accepted Orders */}
+            {/* ✅ Show Buyer & Clickable Phone ONLY in Accepted Orders */}
             {type === "accepted" && (
               <div className="mt-2">
                 <p className="mb-1">
                   <strong>Buyer:</strong> {order.userName}
                 </p>
                 <p className="mb-1">
-                  <strong>Phone:</strong> {order.buyerPhone}
+                  <strong>Phone:</strong>{" "}
+                  <a
+                    href={`tel:${order.buyerPhone}`}
+                    style={{ textDecoration: "none" }}
+                  >
+                    {order.buyerPhone}
+                  </a>
                 </p>
               </div>
             )}
