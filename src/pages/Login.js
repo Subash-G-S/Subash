@@ -67,7 +67,7 @@ function Login() {
         const data = docSnap.data();
 
         if (data.phone) {
-          navigate("/order");
+          navigate("/profile");
         } else {
           navigate("/phone");
         }
