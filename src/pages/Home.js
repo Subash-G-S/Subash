@@ -199,7 +199,7 @@ function Home() {
 
       {/* 🧡 Footer */}
       <footer className="text-center py-3 small" style={{ color: "#8d6e63" }}>
-        © {new Date().getFullYear()} <strong>Ahaar</strong> | Made with 🍩 for College Life
+        © {new Date().getFullYear()} <strong>Ahaar</strong> |  for Amrita.
       </footer>
     </div>
   );
