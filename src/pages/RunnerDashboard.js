@@ -54,6 +54,7 @@ const RunnerDashboard = () => {
           const pending = await Promise.all(
             snapshot.docs.map(async (docSnap) => {
               const data = docSnap.data();
+              if (data.status === "cancelled") return null; // ✅ ignore cancelled
               const buyerDoc = await getDoc(doc(db, "users", data.userId));
               const buyerData = buyerDoc.exists() ? buyerDoc.data() : {};
               return {
@@ -65,7 +66,7 @@ const RunnerDashboard = () => {
               };
             })
           );
-          setPendingOrders(pending.filter(order => order.userId !== user.uid));
+          setPendingOrders(pending.filter(o => o && o.userId !== user.uid));
         });
 
         // 🔹 Accepted orders (picked by this runner)
@@ -134,7 +135,7 @@ const RunnerDashboard = () => {
         if (!orderDoc.exists()) throw new Error("Order does not exist!");
         const orderData = orderDoc.data();
         if (orderData.status !== "pending") {
-          throw new Error("Order has already been picked.");
+          throw new Error("Order has already been picked or cancelled.");
         }
         transaction.update(orderRef, {
           status: "picked",
