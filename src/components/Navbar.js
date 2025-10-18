@@ -1,6 +1,22 @@
 import { Link } from "react-router-dom";
+import { auth } from "../firebase";
+import { useEffect, useState } from "react";
 
 function Navbar() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogout = () => {
+    auth.signOut();
+    window.location.reload(); // refresh to reset state
+  };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
       <div className="container">
@@ -25,9 +41,14 @@ function Navbar() {
             <li className="nav-item">
               <Link className="nav-link" to="/">Home</Link>
             </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/login">Login</Link>
-            </li>
+
+            {/* 🔹 Only show Login if NOT logged in */}
+            {!user && (
+              <li className="nav-item">
+                <Link className="nav-link" to="/login">Login</Link>
+              </li>
+            )}
+
             <li className="nav-item">
               <Link className="nav-link" to="/order">Order</Link>
             </li>
@@ -37,6 +58,15 @@ function Navbar() {
             <li className="nav-item">
               <Link className="nav-link" to="/profile">Profile</Link>
             </li>
+
+            {/* 🔹 Show Logout only when logged in */}
+            {user && (
+              <li className="nav-item">
+                <button className="btn btn-link nav-link" onClick={handleLogout}>
+                  Logout
+                </button>
+              </li>
+            )}
           </ul>
         </div>
       </div>
