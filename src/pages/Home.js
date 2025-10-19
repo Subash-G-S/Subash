@@ -71,7 +71,7 @@ function Home() {
     <div
       className="min-vh-100 d-flex flex-column"
       style={{
-        background: "linear-gradient(135deg, #fffaf3 0%, #fff3e0 100%)",
+        background: "linear-gradient(135deg, #ffecedff 0% , #f2d8b0ff 100%)",
         fontFamily: "'Poppins', sans-serif",
       }}
     >
@@ -183,9 +183,9 @@ function Home() {
 
       {/* 🍪 CTA Section */}
       <section
-        className="container text-center mt-auto mb-5 py-5 px-4 shadow-lg rounded-4"
+        className="container text-center mt-auto mb-5 py-5 px-4 shadow-lg rounded-0"
         style={{
-          background: "linear-gradient(135deg, #d7b97a, #e8c690, #f2d6a2)",
+          //background: "linear-gradient(135deg, #d7b97a, #e8c690, #f2d6a2)",
           color: "#4e342e",
         }}
       >
