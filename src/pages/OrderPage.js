@@ -117,7 +117,7 @@ function OrderPage() {
     >
       <div className="container card-warm p-4 p-md-5">
         <h2 className="mb-4 fw-bold text-center" style={{ color: "#6d4c41" }}>
-          🥗 Place an Order
+          Place an Order
         </h2>
 
         {/* 🏠 Canteen Selection */}
@@ -200,7 +200,7 @@ function OrderPage() {
 
         {/* ✅ Place Order Button */}
         <button className="btn btn-warm-success w-100 py-3 mt-2" onClick={handlePlaceOrder}>
-          Place Order 🍱
+          Place Order
         </button>
       </div>
     </div>
