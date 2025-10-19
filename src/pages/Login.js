@@ -28,7 +28,7 @@ function Login() {
 
       // Send verification email
       await sendEmailVerification(user);
-      alert("Verification email sent! Please check your inbox.");
+      alert("Verification email sent! Please check your inbox or spam section.");
 
       // Create Firestore doc (unverified user too, so we can store data early)
       const newCode = generateCode();
@@ -94,7 +94,7 @@ function Login() {
   const handleForgotPassword = async () => {
     try {
       await sendPasswordResetEmail(auth, email);
-      alert("Password reset email sent! Check your inbox.");
+      alert("Password reset email sent! Check your inbox or spam section.");
       setIsForgot(false);
     } catch (error) {
       console.error("Reset failed:", error);
