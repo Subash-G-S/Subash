@@ -54,8 +54,8 @@ function Home() {
 
       .btn-runner {
         background-color: transparent !important;
-        color: #fff8e1 !important;
-        border: 2px solid #fff8e1 !important;
+        color: #795548 !important;
+        border: 2px solid #795548 !important;
       }
       .btn-runner:hover {
         background-color: #795548 !important;
