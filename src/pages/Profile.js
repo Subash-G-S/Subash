@@ -289,6 +289,9 @@ const Profile = () => {
           ))
         )}
       </div>
+      <footer className="text-center py-3 small" style={{ color: "#8d6e63" }}>
+        © {new Date().getFullYear()} <strong>Ahaar</strong> |  for Amrita.
+      </footer>
     </div>
   );
 };
