@@ -18,12 +18,12 @@ function Navbar() {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm" style={{background: "linear-gradient(130deg, #7b1f29 0%, #a93439 100%)"}}>
       <div className="container">
         <Link to="/">
         <img src="/ahaarlogopng-32x32.png" alt="ahaarlogo" className="me-2" style={{height:"28px",width:"28px"}}></img>
         </Link>
-        <Link className="navbar-brand fw-bold" to="/">
+        <Link className="navbar-brand fw-bold" to="/" style={{color: "white"}}>
           Ahaar
         </Link>
 
@@ -36,36 +36,36 @@ function Navbar() {
           aria-expanded="false"
           aria-label="Toggle navigation"
         >
-          <span className="navbar-toggler-icon" />
+          <span className="navbar-toggler-icon" style={{}}/>
         </button>
 
         <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto">
-            <li className="nav-item">
-              <Link className="nav-link" to="/">Home</Link>
+          <ul className="navbar-nav ms-auto" >
+            <li className="nav-item" >
+              <Link className="nav-link" to="/" style={{color: "white"}}>Home</Link>
             </li>
 
             {/* 🔹 Only show Login if NOT logged in */}
             {!user && (
               <li className="nav-item">
-                <Link className="nav-link" to="/login">Login</Link>
+                <Link className="nav-link" to="/login" style={{color: "white"}}>Login</Link>
               </li>
             )}
 
             <li className="nav-item">
-              <Link className="nav-link" to="/order">Order</Link>
+              <Link className="nav-link" to="/order" style={{color: "white"}}>Order</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/runner">Runner</Link>
+              <Link className="nav-link" to="/runner" style={{color: "white"}}>Runner</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/profile">Profile</Link>
+              <Link className="nav-link" to="/profile" style={{color: "white"}}>Profile</Link>
             </li>
 
             {/* 🔹 Show Logout only when logged in */}
             {user && (
               <li className="nav-item">
-                <button className="btn btn-link nav-link" onClick={handleLogout}>
+                <button className="btn btn-link nav-link" onClick={handleLogout} style={{color: "white"}}>
                   Logout
                 </button>
               </li>
