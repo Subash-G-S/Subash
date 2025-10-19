@@ -11,6 +11,16 @@ function Home() {
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
       }
+      @font-face {
+            font-family: 'VIOLA';
+            src: url('/fonts/VIOLA.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+          }
+
+          body {
+            font-family: 'VIOLA', sans-serif;
+          }
       .hero-gradient {
         background: linear-gradient(270deg, #e2c290, #f0d7a7, #f8e1b7, #e8be91);
         background-size: 800% 800%;
@@ -77,9 +87,9 @@ function Home() {
       >
         <h1
           className="fw-bold display-5 mb-3"
-          style={{ letterSpacing: "0.5px", color: "#3e2723" }}
+          style={{ letterSpacing: "1.5px", color: "#3e2723" , fontFamily: "VIOLA"}}
         >
-          🍱 Ahaar
+          Ahaar
         </h1>
         <p className="fs-5 mb-4" style={{ color: "#5d4037" }}>
           Amrita canteen app — fast ordering, smooth delivery, and happy eating!
