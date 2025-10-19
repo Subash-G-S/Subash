@@ -42,30 +42,30 @@ function Navbar() {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto" >
             <li className="nav-item" >
-              <Link className="nav-link" to="/" style={{color: "white"}}>Home</Link>
+              <Link className="nav-link" to="/" style={{color: "white" , fontFamily: "sans-serif"}}>Home</Link>
             </li>
 
             {/* 🔹 Only show Login if NOT logged in */}
             {!user && (
               <li className="nav-item">
-                <Link className="nav-link" to="/login" style={{color: "white"}}>Login</Link>
+                <Link className="nav-link" to="/login" style={{color: "white", fontFamily: "sans-serif"}}>Login</Link>
               </li>
             )}
 
             <li className="nav-item">
-              <Link className="nav-link" to="/order" style={{color: "white"}}>Order</Link>
+              <Link className="nav-link" to="/order" style={{color: "white", fontFamily: "sans-serif"}}>Order</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/runner" style={{color: "white"}}>Runner</Link>
+              <Link className="nav-link" to="/runner" style={{color: "white", fontFamily: "sans-serif"}}>Runner</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/profile" style={{color: "white"}}>Profile</Link>
+              <Link className="nav-link" to="/profile" style={{color: "white", fontFamily: "sans-serif"}}>Profile</Link>
             </li>
 
             {/* 🔹 Show Logout only when logged in */}
             {user && (
               <li className="nav-item">
-                <button className="btn btn-link nav-link" onClick={handleLogout} style={{color: "white"}}>
+                <button className="btn btn-link nav-link" onClick={handleLogout} style={{color: "white", fontFamily: "sans-serif"}}>
                   Logout
                 </button>
               </li>
