@@ -105,7 +105,7 @@ function Home() {
               fontSize: "1.1rem",
             }}
           >
-            Place an Order 🍔
+            Place an Order
           </Link>
 
           {/* 🟤 Runner Dashboard Button (Fixed Hover) */}
@@ -117,7 +117,7 @@ function Home() {
               fontSize: "1.1rem",
             }}
           >
-            Runner Dashboard 🛵
+            Runner Dashboard
           </Link>
         </div>
       </section>
@@ -203,7 +203,7 @@ function Home() {
             border: "2px solid #ffe0b2",
           }}
         >
-          Start Ordering 🍕
+          Start Ordering
         </Link>
       </section>
 
