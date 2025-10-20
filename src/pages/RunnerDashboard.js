@@ -320,7 +320,7 @@ const RunnerDashboard = () => {
     <div className="warm-bg min-vh-100 py-4">
       <div className="container">
         <h2 className="text-center fw-bold mb-4" style={{ color: "#4e342e" }}>
-          🛵 Runner Dashboard
+          Runner Dashboard
         </h2>
 
         <InputGroup className="mb-4">
