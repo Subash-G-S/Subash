@@ -23,6 +23,16 @@ function OrderPage() {
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
       }
+      @font-face {
+            font-family: 'VIOLA';
+            src: url('/fonts/VIOLA.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+          }
+
+          body {
+            font-family: 'VIOLA', sans-serif;
+          }
       .warm-bg {
         background: linear-gradient(270deg, #f8e1b7, #f0d7a7, #e8be91, #f2d6a2);
         background-size: 800% 800%;
