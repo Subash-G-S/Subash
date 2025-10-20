@@ -25,7 +25,12 @@ function Login() {
         margin: 0;
         padding: 0;
       }
-
+      @font-face {
+            font-family: 'VIOLA';
+            src: url('/fonts/VIOLA.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+          }
       .amrita-page {
         min-height: 100vh;
         display: flex;
@@ -230,7 +235,7 @@ function Login() {
       {/* 🔸 Login Card */}
       <div className="login-card">
         <img src="/ahaarlogopng-32x32.png" alt="Ahaar Logo" />
-        <h3>Ahaar</h3>
+        <h3 style={{fontFamily: "VIOLA"}}>Ahaar</h3>
         <p>The College Canteen App</p>
 
         <h5 className="mb-3">
