@@ -14,19 +14,14 @@ function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔹 Track authentication state
+  // Listen for Firebase Auth changes
   useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-    if (currentUser) {
-      // 🔹 Force Firebase to fetch latest info from server
-      await currentUser.reload();
-    }
-    setUser(auth.currentUser); // always set updated user
-    setLoading(false);
-  });
-  return () => unsubscribe();
-}, []);
-
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
   if (loading) {
     return (
@@ -36,28 +31,24 @@ function App() {
     );
   }
 
-  // 🔸 Helper: check if user verified
   const isVerified = user && user.emailVerified;
 
   return (
     <Router>
-      {/* ✅ Show Navbar only if verified & logged in */}
+      {/* ✅ Show Navbar only for verified users */}
       {isVerified && <Navbar />}
 
       <Routes>
-        {/* 🔹 Home route: only verified users can access */}
+        {/* Home route only for verified users */}
         <Route path="/" element={isVerified ? <Home /> : <Navigate to="/login" />} />
 
-        {/* 🔹 Login route:
-            - If no user → show Login
-            - If user but not verified → still show Login (with “verify” message)
-            - If user verified → go home */}
+        {/* ✅ Pass setUser prop to Login so it can instantly update App state */}
         <Route
           path="/login"
-          element={!user || !isVerified ? <Login /> : <Navigate to="/" />}
+          element={<Login setUser={setUser} />}
         />
 
-        {/* 🔹 Protected Routes — only for verified users */}
+        {/* Protected routes */}
         <Route
           path="/order"
           element={isVerified ? <OrderPage /> : <Navigate to="/login" />}
@@ -71,7 +62,7 @@ function App() {
           element={isVerified ? <RunnerDashboard /> : <Navigate to="/login" />}
         />
 
-        {/* Default */}
+        {/* Default redirect */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
