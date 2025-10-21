@@ -9,8 +9,8 @@ import {
 import { doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
-function Login() {
-  const [mode, setMode] = useState("login"); // login | register | forgot
+function Login({ setUser }) {
+  const [mode, setMode] = useState("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -34,13 +34,23 @@ function Login() {
       if (mode === "login") {
         const result = await signInWithEmailAndPassword(auth, email, password);
         const user = result.user;
+
+        // 🔹 Force refresh user data immediately
         await user.reload();
-        if (!user.emailVerified) {
+        const refreshed = auth.currentUser;
+
+        if (!refreshed.emailVerified) {
           setError("Please verify your email before logging in!");
+          await auth.signOut();
           setLoading(false);
           return;
         }
+
+        // ✅ Instantly update App.js user state and navigate
+        setUser(refreshed);
+        setMessage("Welcome back!");
         navigate("/profile");
+
       } else if (mode === "register") {
         if (!email || !password || !name || !phone) {
           setError("Please fill all fields!");
@@ -68,6 +78,7 @@ function Login() {
 
         setMessage("✅ Verification email sent! Please verify before logging in.");
         setMode("login");
+
       } else if (mode === "forgot") {
         await sendPasswordResetEmail(auth, email);
         setMessage("Password reset email sent! Check your inbox.");
@@ -101,7 +112,6 @@ function Login() {
           borderRadius: "18px",
         }}
       >
-        {/* 🔹 Amrita Logo Inside Card */}
         <div className="mb-3">
           <img
             src="/amritalogo.svg"
@@ -113,7 +123,6 @@ function Login() {
           <p className="text-muted small mb-2">Coimbatore Campus</p>
         </div>
 
-        {/* 🔸 Ahaar Branding */}
         <div className="mb-3">
           <img
             src="/ahaarlogopng-32x32.png"
@@ -124,7 +133,6 @@ function Login() {
           <p className="text-muted small mb-2">The College Canteen App</p>
         </div>
 
-        {/* Heading */}
         <h5 className="fw-semibold text-dark mb-3">
           {mode === "login"
             ? "Login"
@@ -133,7 +141,6 @@ function Login() {
             : "Reset Password"}
         </h5>
 
-        {/* Form */}
         <form onSubmit={handleSubmit}>
           {mode === "register" && (
             <>
@@ -196,8 +203,6 @@ function Login() {
               border: "none",
               transition: "0.3s",
             }}
-            onMouseOver={(e) => (e.target.style.backgroundColor = "#7b1f29")}
-            onMouseOut={(e) => (e.target.style.backgroundColor = "#9e2a33")}
             disabled={loading}
           >
             {loading
@@ -210,7 +215,6 @@ function Login() {
           </button>
         </form>
 
-        {/* Links */}
         <div>
           {mode === "login" && (
             <>
@@ -262,29 +266,6 @@ function Login() {
           © {new Date().getFullYear()} Ahaar | Amrita Vishwa Vidyapeetham
         </p>
       </div>
-
-      {/* 📱 Responsive Fixes */}
-      <style>
-        {`
-        @media (max-width: 480px) {
-          .card {
-            padding: 1.3rem !important;
-          }
-          img[alt="Amrita Logo"] {
-            height: 45px !important;
-          }
-          h6 {
-            font-size: 0.9rem !important;
-          }
-          h4 {
-            font-size: 1.3rem !important;
-          }
-          p.small {
-            font-size: 0.8rem !important;
-          }
-        }
-        `}
-      </style>
     </div>
   );
 }
