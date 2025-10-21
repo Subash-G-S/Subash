@@ -9,7 +9,6 @@ import OrderPage from "./pages/OrderPage";
 import Profile from "./pages/Profile";
 import RunnerDashboard from "./pages/RunnerDashboard";
 import Navbar from "./components/Navbar";
-import PhoneNumberInput from "./pages/PhoneNumberInput";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -17,12 +16,17 @@ function App() {
 
   // 🔹 Track authentication state
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
+  const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    if (currentUser) {
+      // 🔹 Force Firebase to fetch latest info from server
+      await currentUser.reload();
+    }
+    setUser(auth.currentUser); // always set updated user
+    setLoading(false);
+  });
+  return () => unsubscribe();
+}, []);
+
 
   if (loading) {
     return (
@@ -32,40 +36,42 @@ function App() {
     );
   }
 
+  // 🔸 Helper: check if user verified
+  const isVerified = user && user.emailVerified;
+
   return (
     <Router>
-      {/* ✅ Show Navbar only if logged in */}
-      {user && <Navbar />}
+      {/* ✅ Show Navbar only if verified & logged in */}
+      {isVerified && <Navbar />}
 
       <Routes>
-        {/* 🔹 If user not logged in → redirect to /login */}
-        <Route path="/" element={user ? <Home /> : <Navigate to="/login" />} />
+        {/* 🔹 Home route: only verified users can access */}
+        <Route path="/" element={isVerified ? <Home /> : <Navigate to="/login" />} />
 
-        {/* 🔹 Login route (redirects if already logged in) */}
+        {/* 🔹 Login route:
+            - If no user → show Login
+            - If user but not verified → still show Login (with “verify” message)
+            - If user verified → go home */}
         <Route
           path="/login"
-          element={!user ? <Login /> : <Navigate to="/" />}
+          element={!user || !isVerified ? <Login /> : <Navigate to="/" />}
         />
 
-        {/* 🔹 Other protected routes */}
+        {/* 🔹 Protected Routes — only for verified users */}
         <Route
           path="/order"
-          element={user ? <OrderPage /> : <Navigate to="/login" />}
+          element={isVerified ? <OrderPage /> : <Navigate to="/login" />}
         />
         <Route
           path="/profile"
-          element={user ? <Profile /> : <Navigate to="/login" />}
+          element={isVerified ? <Profile /> : <Navigate to="/login" />}
         />
         <Route
           path="/runner"
-          element={user ? <RunnerDashboard /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/phone"
-          element={user ? <PhoneNumberInput /> : <Navigate to="/login" />}
+          element={isVerified ? <RunnerDashboard /> : <Navigate to="/login" />}
         />
 
-        {/* Default: redirect unknown routes */}
+        {/* Default */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
